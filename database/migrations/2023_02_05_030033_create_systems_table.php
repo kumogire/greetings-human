@@ -15,7 +15,11 @@ class CreateSystemsTable extends Migration
     {
         Schema::create('systems', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->nullable();
+            $table->string('description')->nullable();
+            $table->string('url')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

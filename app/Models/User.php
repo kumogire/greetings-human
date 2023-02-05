@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Searchable\Searchable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Searchable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -41,4 +42,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getSearchResult(): SearchResult
+    {
+        $url = route('search.show', $this->slug);
+
+        return new \Spatie\Searchable\SearchResult(
+            $this,
+            $this->name,
+            $url
+        );
+    }
 }

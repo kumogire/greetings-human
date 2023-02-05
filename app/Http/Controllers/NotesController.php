@@ -1,83 +1,75 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\MassDestroyCrmNoteRequest;
-use App\Http\Requests\StoreCrmNoteRequest;
-use App\Http\Requests\UpdateCrmNoteRequest;
-use App\Models\CrmCustomer;
-use App\Models\CrmNote;
+//use App\Http\Requests\MassDestroyCrmNoteRequest;
+//use App\Http\Requests\StoreCrmNoteRequest;
+//use App\Http\Requests\UpdateCrmNoteRequest;
+//use App\Models\CrmCustomer;
+use App\Models\Note;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CrmNoteController extends Controller
+class NoteController extends Controller
 {
     public function index()
     {
         abort_if(Gate::denies('crm_note_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $crmNotes = CrmNote::with(['customer'])->get();
+        $notes = CrmNote::with(['customer'])->get();
 
-        return view('admin.crmNotes.index', compact('crmNotes'));
+        return view('notes.index', compact('notes'));
     }
 
     public function create()
     {
-        abort_if(Gate::denies('crm_note_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('note_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $customers = CrmCustomer::pluck('first_name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-        return view('admin.crmNotes.create', compact('customers'));
+        return view('notes.create', compact('customers'));
     }
 
-    public function store(StoreCrmNoteRequest $request)
+    public function store(StoreNoteRequest $request)
     {
-        $crmNote = CrmNote::create($request->all());
+        $note = Note::create($request->all());
 
-        return redirect()->route('admin.crm-notes.index');
+        return redirect()->route('notes.index');
     }
 
-    public function edit(CrmNote $crmNote)
+    public function edit(Note $note)
     {
-        abort_if(Gate::denies('crm_note_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('note_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $customers = CrmCustomer::pluck('first_name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-        $crmNote->load('customer');
-
-        return view('admin.crmNotes.edit', compact('crmNote', 'customers'));
+        return view('notes.edit', compact('note'));
     }
 
-    public function update(UpdateCrmNoteRequest $request, CrmNote $crmNote)
+    public function update(UpdateNoteRequest $request, Note $note)
     {
-        $crmNote->update($request->all());
+        $note->update($request->all());
 
-        return redirect()->route('admin.crm-notes.index');
+        return redirect()->route('notes.index');
     }
 
-    public function show(CrmNote $crmNote)
+    public function show(Note $note)
     {
-        abort_if(Gate::denies('crm_note_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('note_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $crmNote->load('customer');
-
-        return view('admin.crmNotes.show', compact('crmNote'));
+        return view('notes.show', compact('note'));
     }
 
-    public function destroy(CrmNote $crmNote)
+    public function destroy(Note $note)
     {
-        abort_if(Gate::denies('crm_note_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('note_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $crmNote->delete();
+        $note->delete();
 
         return back();
     }
 
-    public function massDestroy(MassDestroyCrmNoteRequest $request)
+    public function massDestroy(MassDestroyNoteRequest $request)
     {
-        CrmNote::whereIn('id', request('ids'))->delete();
+        Note::whereIn('id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
     }

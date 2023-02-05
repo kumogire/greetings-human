@@ -1,2 +1,2 @@
-# Pasteup
-Test API service
+# Greetings Human
+Team onboarding made easy
